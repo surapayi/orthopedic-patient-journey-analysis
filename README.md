@@ -45,13 +45,13 @@ I started with a broad map of the whole patient journey (see `00-context`), and 
 
 ## Swimlane
 
-[![Knee consult swimlane](02-swimlane/your-swimlane-file.png)](02-swimlane/your-swimlane-file.png)
+[![Knee consult swimlane](02-swimlane.png)](02-swimlane.png)
 
 *Click the image to enlarge.*
 
 ## Data model
 
-[![Knee consult data model](03-data-model/your-erd-file.png)](03-data-model/your-erd-file.png)
+[![Knee consult data model](03-data-model.png)](03-data-model.png)
 
 *Nine core tables plus an eligibility check table, with the relationships between them.*
 
