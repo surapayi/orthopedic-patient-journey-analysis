@@ -22,7 +22,7 @@ A new patient has a scheduled appointment with an orthopedic surgeon for chronic
 - Drug prior authorization
 - Denials and appeals
 
-**One optional branch:** if the surgeon orders an MRI instead of, or after, the X-ray, the order may need prior authorization. I show this as a single branch that links to my [prior authorization project](ADD-LINK-HERE) and do not map it again here.
+**One optional branch:** if the surgeon orders an MRI instead of, or after, the X-ray, the order may need prior authorization. I show this as a single branch that links to my [prior authorization project](https://github.com/surapayi/prior-authorization-epa-analysis) and do not map it again here.
 
 **Assumed setup:** one EHR with built-in practice management (scheduling, registration, check-in, charges, claims), plus a separate imaging system for the X-ray, connected to the EHR by an interface. Outside the clinic are a clearinghouse, the payer, an e-prescribing network, and the pharmacy. Other setups are common, and they would change which handoffs are messages and which are inside the EHR.
 
@@ -41,7 +41,19 @@ I started with a broad map of the whole patient journey (see `00-context`), and 
 | E-prescription | Medication order goes to an outside pharmacy | NCPDP SCRIPT | Outside the organization |
 | Claim | Charges become a claim sent to the payer | X12 837P | Outside the organization |
 
-The full handoff table has more detail (see below).
+[Full handoff table](01-handoff-table.md)
+
+## Swimlane
+
+[![Knee consult swimlane](02-swimlane/your-swimlane-file.png)](02-swimlane/your-swimlane-file.png)
+
+*Click the image to enlarge.*
+
+## Data model
+
+[![Knee consult data model](03-data-model/your-erd-file.png)](03-data-model/your-erd-file.png)
+
+*Nine core tables plus an eligibility check table, with the relationships between them.*
 
 ## What are these standards?
 
@@ -56,8 +68,6 @@ Different systems need a shared format to exchange data. Inside one EHR, a step 
 A middle layer, such as an interface engine, a clearinghouse, or an e-prescribing network, usually carries and translates these messages. The core exchanges with outside organizations in this visit are three: eligibility, the prescription, and the claim.
 
 ## Repo structure
-
-> File names are placeholders and may change.
 
 ```
 .
