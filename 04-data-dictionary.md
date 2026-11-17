@@ -83,7 +83,7 @@ One row each time the clinic checks if coverage is active.
 |---|---|---|---|---|---|---|---|
 | check_id | INTEGER | No | PK | Internal ID for the check | 4001 | EHR (assumed, system-generated) | FHIR CoverageEligibilityRequest.id |
 | coverage_id | INTEGER | No | FK | Links to coverage | 3001 | EHR | FHIR CoverageEligibilityRequest.insurance.coverage |
-| appointment_id | INTEGER | No | FK | Links to the appointment the check was for | 2001 | EHR | no direct match (local design choice) |
+| appointment_id | INTEGER | Yes | FK | Links to the appointment the check was for | 2001 | EHR | no direct match (local design choice) |
 | checked_at | TEXT | No | | When the check was sent | 2026-11-30 08:00 | EHR | FHIR CoverageEligibilityRequest.created; X12 270/271 |
 | is_active | INTEGER | No | | 1 = coverage active, 0 = not active | 1 | Payer, through the clearinghouse | X12 271, FHIR CoverageEligibilityResponse.insurance.inforce |
 | copay | REAL | Yes | | Fixed amount the patient pays at the visit | 40.00 | Payer, through the clearinghouse | X12 271 |
