@@ -79,13 +79,15 @@ I left these out on purpose: prior authorization, referrals, patients with sever
 | S1 | Full happy path | Patient 1001 books an appointment. Coverage is active and the eligibility check says yes. The patient arrives and the encounter is finished. The surgeon orders a right knee X-ray. The result is Final. A prescription is Filled. Two charges (99204 for $250, 73560 for $150) go on one claim. The claim is Paid: total 400, paid 280, patient owes 120. | The whole journey works with no gaps | No |
 | S2 | Walk-in | Patient 1002 has no appointment. The encounter has an empty `appointment_id`. The patient has active coverage, an X-ray with a Final result, charges, and a claim. | An empty `appointment_id` on an encounter is allowed | No |
 | S3 | Self-pay | Patient 1003 has an appointment and an encounter. There is no coverage row and no eligibility check. The charges have an empty `claim_id`. There is no claim. | An empty `claim_id` on a charge is allowed | No |
-| S4 | Inactive coverage, no X-ray and prescription needed | Patient 1004 has a coverage row. The eligibility check says `is_active = 0`. The visit still happens. The charges have an empty `claim_id`. | Inactive coverage is a real case, not an error | No |
+| S4 | Inactive coverage | Patient 1004 has a coverage row. The eligibility check says `is_active = 0`. The visit still happens. The charges have an empty `claim_id`. | Inactive coverage is a real case, not an error | No |
 | S5 | No-show | Patient 1005 has an appointment with status No-show. An eligibility check was run earlier. There is no encounter and no charges. | An appointment can exist with no encounter | No |
 | S6 | Cancelled appointment | Patient 1006 has an appointment with status Cancelled. There is no encounter. | Same as S5, a different status | No |
 | S7 | Preliminary, then final | Patient 1007 has one X-ray order. It has two results: one Preliminary and one Final. | One order can have many results | No |
 | S8 | Rejected claim | Patient 1008 has a claim with status Rejected. `paid_amount` and `patient_owes` are empty. | A claim can be unpaid for a real reason | No |
 | S9 | Claim in progress | Patient 1009 has a claim with status Submitted. `paid_amount` and `patient_owes` are empty. | An empty `paid_amount` is normal before the payer replies | No |
 | S10 | Consult only | Patient 1010 has a visit with a 99204 charge only. There is no X-ray order and no prescription. The claim is Paid. | A visit does not need child rows in every table | No |
+| S11 | Order not completed | Patient 1011 has an appointment and an encounter. The surgeon places an X-ray order. The patient leaves without the scan. The order stays Ordered. There is no result. Only the 99204 visit charge is billed. | An order can have zero results. No X-ray charge without a scan. | No |
+| S12 | Prescription only | Patient 1012 has an encounter. There is no X-ray order. One prescription is Sent. The 99204 charge goes on a Paid claim. | A visit can have a prescription and no X-ray | No |
 
 ## Planted errors
 
@@ -116,6 +118,23 @@ Extra errors if I have time:
 | A self-pay charge can have an empty `claim_id` | S3 (should pass) |
 | Every result links to an order | E3 |
 | Paid should not be bigger than billed | E4 |
+
+## Scenario coverage matrix
+
+| ID | Scenario | Appointment | Coverage and check | Encounter | X-ray order | Result | Prescription | Charges | Claim |
+|---|---|---|---|---|---|---|---|---|---|
+| S1 | Full happy path | Arrived | Active | Finished | Completed | Final | Filled | 2 | Paid |
+| S2 | Walk-in | None | Active, check has no appointment | Finished, no appointment | Completed | Final | Sent | 2 | Paid |
+| S3 | Self-pay | Arrived | None | Finished | Completed | Final | None | 2, no claim | None |
+| S4 | Inactive coverage | Arrived | Inactive | Finished | None | None | None | 1, no claim | None |
+| S5 | No-show | No-show | Active (check run earlier) | None | None | None | None | None | None |
+| S6 | Cancelled | Cancelled | None | None | None | None | None | None | None |
+| S7 | Preliminary, then final | Arrived | Active | Finished | Completed | Preliminary, then Final | None | 2 | Paid |
+| S8 | Rejected claim | Arrived | Active | Finished | None | None | None | 1 | Rejected |
+| S9 | Claim in progress | Arrived | Active | Finished | None | None | None | 1 | Submitted |
+| S10 | Consult only | Arrived | Active | Finished | None | None | None | 1 | Paid |
+| S11 | Order not completed | Arrived | Active | Finished | Ordered | None | None | 1 | Paid |
+| S12 | Prescription only | Arrived | Active | Finished | None | None | Sent | 1 | Paid |
 
 ## Open questions
 
