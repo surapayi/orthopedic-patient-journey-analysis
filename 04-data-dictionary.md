@@ -147,7 +147,7 @@ One row per prescription sent to a pharmacy.
 | prescriber | TEXT | No | | Who wrote the prescription | Dr. Sample Lee | EHR | FHIR MedicationRequest.requester |
 | prescribed_at | TEXT | No | | When it was written | 2026-12-01 11:30 | EHR | FHIR MedicationRequest.authoredOn |
 | medication_code | TEXT | No | | RxNorm code for the drug. I will look up a real code in RxNav before using one. | (RxNorm code for ibuprofen 800 mg tablet) | EHR | FHIR MedicationRequest.medication[x] , NCPDP SCRIPT |
-| medication_dose | TEXT | Yes | | Strength and form | 800 mg tablet | EHR | FHIR MedicationRequest.dosageInstruction |
+| medication_dose | TEXT | Yes | | Strength and form | 800 mg tablet | EHR | FHIR MedicationRequest.dosageInstruction.doseAndRate.dose[x] (Dosage data type) |
 | directions | TEXT | Yes | | Instructions for the patient | Take 1 tablet by mouth every 8 hours with food | EHR | FHIR MedicationRequest.dosageInstruction.text |
 | status | TEXT | No | | Assumed values: Sent, Received, Filled, Cancelled | Sent | EHR, updated by e-prescribing network | FHIR MedicationRequest.status |
 | pharmacy_id | TEXT | Yes | | ID of the outside pharmacy. This is an external ID, not a foreign key. There is no pharmacy table. | PHARM-0001 | E-prescribing network | NCPDP SCRIPT |
