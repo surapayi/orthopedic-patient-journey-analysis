@@ -68,3 +68,88 @@ INSERT INTO claim (claim_id, encounter_id, coverage_id, status, total_amount, su
 INSERT INTO charge (charge_id, encounter_id, claim_id, provider, service_date, cpt_code, diagnosis_code, units, amount) VALUES
 (9001, 5001, 10001, 'Dr. Sample Lee', '2026-09-14', '99204', 'M25.561', 1, 250.00),
 (9002, 5001, 10001, 'Dr. Sample Lee', '2026-09-14', '73560', 'M25.561', 1, 150.00);
+
+-- =====================================================================
+-- Batch 2: S2 walk-in, S3 self-pay, S4 inactive coverage
+-- Paste this at the end of 02-sample-data.sql, below batch 1.
+-- (PRAGMA foreign_keys = OFF is already at the top of that file.)
+-- ID pattern: appointment, coverage, check, encounter, order, result,
+-- prescription, and claim IDs end with the patient number.
+-- Appointment 2002 is unused on purpose: patient 1002 is a walk-in.
+-- Charge IDs just count up.
+-- =====================================================================
+
+-- =====================================================================
+-- S2 walk-in (patient 1002)
+-- No appointment. The encounter and the eligibility check both have an
+-- empty appointment_id. Active coverage, left knee X-ray with a Final
+-- result, a prescription, two charges on one Paid claim.
+-- =====================================================================
+INSERT INTO coverage (coverage_id, patient_id, member_id, plan, payer_name) VALUES
+(3002, 1002, 'MEM-112233', 'Sample HMO Silver', 'Sample Health Insurance');
+
+INSERT INTO eligibility_check (check_id, coverage_id, appointment_id, checked_at, is_active, copay, deductible) VALUES
+(4002, 3002, NULL, '2026-09-16 09:45', 1, 30.00, 2000.00);
+
+INSERT INTO encounter (encounter_id, patient_id, appointment_id, status, provider, arrival_datetime, reason) VALUES
+(5002, 1002, NULL, 'Finished', 'Dr. Sample Lee', '2026-09-16 09:40', 'Left knee pain, walk-in');
+
+INSERT INTO imaging_order (order_id, encounter_id, status, ordering_provider, exam_code, diagnosis_code, ordered_datetime, laterality, priority) VALUES
+(6002, 5002, 'Completed', 'Dr. Sample Lee', '73560', 'M25.562', '2026-09-16 10:05', 'Left', 'Routine');
+
+INSERT INTO result (result_id, order_id, status, result_text, issued_at, exam_datetime, reader, image_reference) VALUES
+(7002, 6002, 'Final', 'No fracture seen.', '2026-09-16 11:00', '2026-09-16 10:20', 'Dr. Sample Chen', 'IMG-STUDY-0002');
+
+INSERT INTO prescription (prescription_id, encounter_id, prescriber, prescribed_at, medication_code, medication_dose, directions, status, pharmacy_id) VALUES
+(8002, 5002, 'Dr. Sample Lee', '2026-09-16 11:30', '197807', '1 tablet', 'Take 1 tablet by mouth every 8 hours with food', 'Sent', 'PHARM-0002');
+
+INSERT INTO claim (claim_id, encounter_id, coverage_id, status, total_amount, submitted_at, paid_amount, patient_owes) VALUES
+(10002, 5002, 3002, 'Paid', 400.00, '2026-09-17 15:30', 300.00, 100.00);
+
+INSERT INTO charge (charge_id, encounter_id, claim_id, provider, service_date, cpt_code, diagnosis_code, units, amount) VALUES
+(9003, 5002, 10002, 'Dr. Sample Lee', '2026-09-16', '99204', 'M25.562', 1, 250.00),
+(9004, 5002, 10002, 'Dr. Sample Lee', '2026-09-16', '73560', 'M25.562', 1, 150.00);
+
+-- =====================================================================
+-- S3 self-pay (patient 1003)
+-- Appointment and encounter, right knee X-ray with a Final result.
+-- No coverage, no eligibility check, no claim.
+-- Both charges have an empty claim_id.
+-- =====================================================================
+INSERT INTO appointment (appointment_id, patient_id, provider, visit_type, status, location, appointment_datetime, appointment_reason, create_datetime) VALUES
+(2003, 1003, 'Dr. Sample Lee', 'New patient', 'Arrived', 'Ortho Clinic, Room 2', '2026-09-18 10:00', 'Right knee pain', '2026-09-10 11:20');
+
+INSERT INTO encounter (encounter_id, patient_id, appointment_id, status, provider, arrival_datetime, reason) VALUES
+(5003, 1003, 2003, 'Finished', 'Dr. Sample Lee', '2026-09-18 09:55', 'Right knee pain');
+
+INSERT INTO imaging_order (order_id, encounter_id, status, ordering_provider, exam_code, diagnosis_code, ordered_datetime, laterality, priority) VALUES
+(6003, 5003, 'Completed', 'Dr. Sample Lee', '73560', 'M25.561', '2026-09-18 10:20', 'Right', 'Routine');
+
+INSERT INTO result (result_id, order_id, status, result_text, issued_at, exam_datetime, reader, image_reference) VALUES
+(7003, 6003, 'Final', 'No fracture seen.', '2026-09-18 11:15', '2026-09-18 10:35', 'Dr. Sample Chen', 'IMG-STUDY-0003');
+
+INSERT INTO charge (charge_id, encounter_id, claim_id, provider, service_date, cpt_code, diagnosis_code, units, amount) VALUES
+(9005, 5003, NULL, 'Dr. Sample Lee', '2026-09-18', '99204', 'M25.561', 1, 250.00),
+(9006, 5003, NULL, 'Dr. Sample Lee', '2026-09-18', '73560', 'M25.561', 1, 150.00);
+
+-- =====================================================================
+-- S4 inactive coverage (patient 1004), no X-ray and prescription needed
+-- Coverage row exists, but the eligibility check says is_active = 0.
+-- copay and deductible are empty because the payer gave no benefits.
+-- The visit still happens. The charge is not sent to the payer,
+-- so claim_id is empty.
+-- =====================================================================
+INSERT INTO appointment (appointment_id, patient_id, provider, visit_type, status, location, appointment_datetime, appointment_reason, create_datetime) VALUES
+(2004, 1004, 'Dr. Sample Lee', 'New patient', 'Arrived', 'Ortho Clinic, Room 3', '2026-09-21 14:00', 'Left knee pain', '2026-09-12 09:40');
+
+INSERT INTO coverage (coverage_id, patient_id, member_id, plan, payer_name) VALUES
+(3004, 1004, 'MEM-445566', 'Sample PPO Basic', 'Sample Health Insurance');
+
+INSERT INTO eligibility_check (check_id, coverage_id, appointment_id, checked_at, is_active, copay, deductible) VALUES
+(4004, 3004, 2004, '2026-09-20 08:15', 0, NULL, NULL);
+
+INSERT INTO encounter (encounter_id, patient_id, appointment_id, status, provider, arrival_datetime, reason) VALUES
+(5004, 1004, 2004, 'Finished', 'Dr. Sample Lee', '2026-09-21 13:50', 'Left knee pain');
+
+INSERT INTO charge (charge_id, encounter_id, claim_id, provider, service_date, cpt_code, diagnosis_code, units, amount) VALUES
+(9007, 5004, NULL, 'Dr. Sample Lee', '2026-09-21', '99204', 'M25.562', 1, 250.00);
