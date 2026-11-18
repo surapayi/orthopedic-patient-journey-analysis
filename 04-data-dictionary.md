@@ -8,6 +8,16 @@ This file explains each column in the ERD (`03-data-model.png`).
 - I have not worked in a clinic. This dictionary is built from public sources. These include FHIR R4, HL7, X12, NCPDP, and CMS pages.
 - A real system would have more columns than this. I kept only the fields my swimlane uses.
 - "Assumed" means I made the choice. It did not come from a real clinic.
+- I use ICD-10-CM for diagnosis codes because the claim needs them. A real EHR may store clinical diagnoses in SNOMED CT and map them to ICD-10-CM. I did not model that.
+
+## Code sets used
+
+| Used for | Code set | Where |
+|---|---|---|
+| Diagnosis | ICD-10-CM | `imaging_order.diagnosis_code`, `charge.diagnosis_code` |
+| Services billed | CPT | `charge.cpt_code` |
+| X-ray exam | CPT (my assumption) | `imaging_order.exam_code` |
+| Medication | RxNorm | `prescription.medication_code` |
 
 ## How to read the columns
 
