@@ -126,7 +126,7 @@ Extra errors if I have time:
 | S1 | Full happy path | Arrived | Active | Finished | Completed | Final | Filled | 2 | Paid |
 | S2 | Walk-in | None | Active, check has no appointment | Finished, no appointment | Completed | Final | Sent | 2 | Paid |
 | S3 | Self-pay | Arrived | None | Finished | Completed | Final | None | 2, no claim | None |
-| S4 | Inactive coverage | Arrived | Inactive | Finished | None | None | None | 1, no claim | None |
+| S4 | Inactive coverage | Arrived | Inactive | Finished | Completed | Final | Received | 2, no claim | None |
 | S5 | No-show | No-show | Active (check run earlier) | None | None | None | None | None | None |
 | S6 | Cancelled | Cancelled | None | None | None | None | None | None | None |
 | S7 | Preliminary, then final | Arrived | Active | Finished | Completed | Preliminary, then Final | None | 2 | Paid |
